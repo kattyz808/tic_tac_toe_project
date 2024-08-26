@@ -1,0 +1,98 @@
+def create_board():
+    # Initializes and returns a list filled with numbers 1 to 9 to represent an empty 3x3 board.
+    return [str(i) for i in range(1, 10)]
+
+
+
+def display_board(board):
+    # Prints the board to the console in a closed box format with numbered cells.
+
+    def format_row(start_index):
+        # Formats a row of the board.
+        return "|   {}   |   {}   |   {}   |".format(board[start_index], board[start_index + 1], board[start_index + 2])
+
+    print("+-------+-------+-------+")
+    print(format_row(0))
+    print("+-------+-------+-------+")
+    print(format_row(3))
+    print("+-------+-------+-------+")
+    print(format_row(6))
+    print("+-------+-------+-------+")
+
+
+def player_input(board, player):
+    # Allows players to input their move, checks for valid input, and updates the board.
+    while True:
+        try:
+            move = int(input("Player {}, enter your move (1-9): ".format(player)))
+            if move < 1 or move > 9:
+                raise ValueError
+            if board[move - 1] in ['X', 'O']:
+                print("Invalid move. The cell is already taken.")
+            else:
+                board[move - 1] = player
+                break
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 9.")
+
+
+def check_win(board):
+    # Checks all win conditions (rows, columns, diagonals) to see if either player has won.
+    win_conditions = [
+        [0, 1, 2],  # First row
+        [3, 4, 5],  # Second row
+        [6, 7, 8],  # Third row
+        [0, 3, 6],  # First column
+        [1, 4, 7],  # Second column
+        [2, 5, 8],  # Third column
+        [0, 4, 8],  # Diagonal from top-left to bottom-right
+        [2, 4, 6]  # Diagonal from top-right to bottom-left
+    ]
+    for condition in win_conditions:
+        if board[condition[0]] == board[condition[1]] == board[condition[2]]:
+            return board[condition[0]]
+    return None
+
+
+def check_draw(board):
+    # Checks if all positions on the board are filled without any player winning.
+    return all(cell in ['X', 'O'] for cell in board) and check_win(board) is None
+
+
+def switch_player(current_player):
+    # Switches between 'X' and 'O'.
+    return 'O' if current_player == 'X' else 'X'
+
+
+def tic_tac_toe():
+    # Starts and runs the Tic Tac Toe game.
+    board = create_board()
+    current_player = 'X'
+    while True:
+        display_board(board)
+        player_input(board, current_player)
+        if check_win(board):
+            display_board(board)
+            print("Player {} wins!".format(current_player))
+            break
+        if check_draw(board):
+            display_board(board)
+            print("It's a draw!")
+            break
+        current_player = switch_player(current_player)
+
+    # Ask if players want to start a new game.
+    while True:
+        replay = input("Do you want to play again? (yes/no): ").strip().lower()
+        if replay == 'yes':
+            tic_tac_toe()
+            break
+        elif replay == 'no':
+            print("Thanks for playing!")
+            break
+        else:
+            print("Invalid response. Please enter 'yes' or 'no'.")
+
+
+# Start the game
+tic_tac_toe()
